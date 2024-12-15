@@ -1,0 +1,12 @@
+{% extends "resipe_site/template.html" %}
+{% load static %}
+{% block title %} {{title}} {% endblock %}
+{% block main %}
+<h1>Добаить рецепт</h1>
+<p>Заполните эти поля</p>
+<form method="post">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Create new recipe"></p>
+</form>
+{% endblock %}

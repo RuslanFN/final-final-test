@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import ImageResipe, StepResipe, Category, Resipe
+from resipe_site.models import ImageResipe, StepResipe, Category, Resipe
 # Register your models here.
 
 class ImageResipeInline(admin.StackedInline):
@@ -10,7 +10,7 @@ class StepResipeInline(admin.StackedInline):
 
 class ResipeAdmin(admin.ModelAdmin):
     inlines = [ImageResipeInline, StepResipeInline]
-    prepopulated_fields = {'slug': ('title', 'id')} 
+    prepopulated_fields = {'slug': ('title', 'author')} 
 
-admin.register(Resipe, ResipeAdmin)
-admin.register(Category)
+admin.site.register(Resipe, ResipeAdmin)
+admin.site.register(Category)
