@@ -21,8 +21,8 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register', views.register, name='register'),
-    path('login', views.login, name='login'),
-    path('logout', views.logout, name='logout'),
+    path('login', views.login_user, name='login'),
+    path('logout', views.logout_user, name='logout'),
     path('resipes', views.get_resipes, name='resipes'),
     path('add_recipe', views.add_recipe, name='add_resipe')
     ]

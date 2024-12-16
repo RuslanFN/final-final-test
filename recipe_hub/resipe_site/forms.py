@@ -23,11 +23,11 @@ class StepResipeInline(forms.Form):
         fields = ['title', 'detail']
 
 
-class AddResipe(forms.ModelForm):
-    category = forms.ModelChoiceField(Category.objects.all(), label='Категория')
+class AddReсipe(forms.ModelForm):
+    Category = forms.ModelChoiceField(Category.objects.all(), label='Категория')
     class Meta:
         model = Resipe
-        fields = ['title', 'about', 'duration']
+        fields = ['title', 'about', 'duration', 'Category']
         widgets = {'about':forms.Textarea}
 
 
