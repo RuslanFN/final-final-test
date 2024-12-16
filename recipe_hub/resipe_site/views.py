@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserRegistrationForm, AuthForm, AddResipe
+from .forms import UserRegistrationForm, AuthForm, AddResipe, inline_form
 from . import models
 # Create your views here.
 
@@ -10,7 +10,7 @@ def get_resipes(request):
     return render(request, 'resipe_site/resipes-list.html', {'title':'Рецепты', 'resipes':resipes})
 def add_recipe(request):
     print(models.Category.objects.all())
-    return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddResipe()})
+    return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddResipe(), 'formset': inline_form()})
 def login(request):
     if request.POST:
         username = request.POST.get('username')

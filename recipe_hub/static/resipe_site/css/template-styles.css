@@ -1,5 +1,6 @@
 body {
     font-family: Arial, sans-serif;
+    display: flex;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -42,9 +43,10 @@ footer {
     color: #fff;
     text-align: center;
     padding: 10px 0;
-    position: absolute;
+    position: static;
     width: 100%;
     bottom: 0;
+    margin-top: auto;
 }
 
 main {

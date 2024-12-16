@@ -1,12 +1,48 @@
 {% extends "resipe_site/template.html" %}
 {% load static %}
 {% block title %} {{title}} {% endblock %}
+
 {% block main %}
 <h1>Добаить рецепт</h1>
 <p>Заполните эти поля</p>
-<form method="post">
+<form id="form-container" method="post">
     {{ form.as_p }}
+    <h2>Шаги</h2>
+    {{ formset.management_form }}
+    {% for form in formset %}
+        
+        <h3>Шаг {{ forloop.counter }}</h3> 
+        <div class="bird-form">
+            {{ form.as_p }}
+        </div>
+    {% endfor %}
+    <button type="button" id="add-step">Add Step</button>
     {% csrf_token %}
     <p><input type="submit" value="Create new recipe"></p>
 </form>
+
+ <script>
+        let birdForm = document.querySelectorAll(".bird-form")
+        let container = document.querySelector("#form-container")
+        let addButton = document.querySelector("#add-step")
+        let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+
+        let formNum = birdForm.length-1
+        addButton.addEventListener('click', addForm)
+
+        function addForm(e){
+            e.preventDefault()
+
+            let newForm = birdForm[0].cloneNode(true)
+            let formRegex = RegExp(`form-(\\d){1}-`,'g')
+            formNum++
+            let header = document.createElement('h3')
+            header.textContent = 'Шаг ' + `${formNum + 1}`
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+            container.insertBefore(header, addButton)
+            container.insertBefore(newForm, addButton)
+            
+            totalForms.setAttribute('value', `${formNum+1}`)
+        }
+    </script>
 {% endblock %}

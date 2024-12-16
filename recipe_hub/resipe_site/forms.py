@@ -17,7 +17,7 @@ class UserRegistrationForm(forms.ModelForm):
         return cd['password2']
     
 
-class StepResipeInline(forms.BaseInlineFormSet):
+class StepResipeInline(forms.Form):
     class Meta:
         model = StepResipe
         fields = ['title', 'detail']
@@ -31,7 +31,7 @@ class AddResipe(forms.ModelForm):
         widgets = {'about':forms.Textarea}
 
 
-forms.inlineformset_factory(Resipe, StepResipe, AddResipe, StepResipeInline, fields=['title', 'detail'])
+inline_form = forms.inlineformset_factory(Resipe, StepResipe, fields=['title', 'detail'], can_delete=True, extra=3)#, AddResipe, StepResipeInline, fields=['title', 'detail'])
 
 #stepInline = forms.inlineformset_factory(Resipe, StepResipeInline, AddRecipe, StepResipeInline)
 class AuthForm(forms.Form):
