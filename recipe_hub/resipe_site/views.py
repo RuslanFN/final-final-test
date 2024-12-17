@@ -20,11 +20,12 @@ def add_recipe(request):
         print(resipe.slug)
         resipe.save()
         if inline_form(request.POST).is_valid():
-            stepset = inline_form(request.POST).save(commit=False)
-            for step in stepset:
+            stepset = inline_form(request.POST)
+            for step_item in stepset:
+                step = step_item.save(commit=False)
                 step.resipe = resipe
                 step.save() 
-        redirect('/resipes')
+        return redirect('/resipes')
     else:
         print(models.Category.objects.all())
         return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddReсipe(), 'formset': inline_form()})
