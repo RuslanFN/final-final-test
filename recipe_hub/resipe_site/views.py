@@ -1,23 +1,44 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserRegistrationForm, AuthForm, AddReсipe, inline_form
 from . import models
 from django.utils.text import slugify
+from .slug_generate import SlugGenerator
 # Create your views here.
-
+slug_gen = SlugGenerator()
 def get_resipes(request):
     resipes = models.Resipe.objects.all()
-
     return render(request, 'resipe_site/resipes-list.html', {'title':'Рецепты', 'resipes':resipes})
+
+def edit_reciipe(request, slug):
+    recipe = get_object_or_404(models.Resipe, slug=slug)
+    if request.method == 'POST':
+        recipe_form = AddReсipe(request.POST, instance=recipe).save(commit=False)
+        #recipe_form.author = request.user
+        recipe_form.slug = slug_gen(recipe_form.title, recipe_form.author.id)
+        recipe_form.save()
+        if inline_form(request.POST, instance=recipe).is_valid():
+            stepset = inline_form(request.POST, instance=recipe)
+            for step_item in stepset:
+                step = step_item.save(commit=False)
+                step.resipe = recipe
+                step.save() 
+        
+        return redirect('/resipes')
+    else:
+        form = AddReсipe(instance=recipe)
+        formset_steps = inline_form(instance = recipe)
+        return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': form, 'formset': formset_steps})
+
+
 def add_recipe(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=404)
     if request.POST:    
         resipe = AddReсipe(request.POST).save(commit=False)
         resipe.author = request.user
-        resipe.slug = slugify(resipe.title)
-        print(resipe.slug)
+        resipe.slug = slug_gen(resipe.title, resipe.author.id)
         resipe.save()
         if inline_form(request.POST).is_valid():
             stepset = inline_form(request.POST)
@@ -27,7 +48,6 @@ def add_recipe(request):
                 step.save() 
         return redirect('/resipes')
     else:
-        print(models.Category.objects.all())
         return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddReсipe(), 'formset': inline_form()})
 def login_user(request):
     if request.POST:

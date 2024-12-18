@@ -24,6 +24,7 @@ urlpatterns = [
     path('login', views.login_user, name='login'),
     path('logout', views.logout_user, name='logout'),
     path('resipes', views.get_resipes, name='resipes'),
-    path('add_recipe', views.add_recipe, name='add_resipe')
+    path('add_recipe', views.add_recipe, name='add_resipe'),
+    path('<slug:slug>/edit', views.edit_reciipe, name='edit_recipe')
     ]
 
