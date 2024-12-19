@@ -1,3 +1,4 @@
+from django.utils.text import slugify
 class SlugGenerator():
     def __init__(self):
         self.translit = {'а':'a', 'б':'b', 'в':'b', 'г':'g', 
@@ -9,5 +10,5 @@ class SlugGenerator():
     def __call__(self, title, id):
         slug = ''
         for sym in title.lower():
-            slug += self.translit.get(sym, '')
-        return slug + '-' + str(id)
+            slug += self.translit.get(sym, sym)
+        return slugify(slug + '-' + str(id))

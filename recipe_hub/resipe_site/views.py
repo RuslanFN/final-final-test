@@ -6,6 +6,8 @@ from . import models
 from django.utils.text import slugify
 from .slug_generate import SlugGenerator
 from django import forms
+from django.contrib import messages
+from django.db import IntegrityError
 # Create your views here.
 slug_gen = SlugGenerator()
 def get_resipes(request):
@@ -15,14 +17,17 @@ def get_resipes(request):
 def edit_recipe(request, slug):
     recipe = get_object_or_404(models.Resipe, slug=slug)
     if request.method == 'POST':
-        recipe_form = AddReсipe(request.POST, instance=recipe).save(commit=False)
-        
-    
-        recipe_form.slug = slug_gen(recipe_form.title, recipe_form.author.id)
-        recipe_form.save()
-        stepset = inline_form(request.POST, instance=recipe)
+        try:
+            recipe_form = AddReсipe(request.POST, instance=recipe).save(commit=False)
+            recipe_form.slug = slug_gen(recipe_form.title, recipe_form.author.id)
+            recipe_form.save()
+            stepset = inline_form(request.POST, instance=recipe)
+        except IntegrityError:
+            messages.error(request, 'У вас уже есть рецепт с таким названием.')
+            return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': AddReсipe(instance=recipe), 'formset': inline_form(instance=recipe), 'image_formset':inline_form_image(instance=recipe)})
         if stepset.is_valid():
                 for step in stepset:
+                    
                     if step.cleaned_data.get('DELETE') or (not step.cleaned_data.get('title') and not step.cleaned_data.get('detail')):
                         if step.instance.id:
                             step.instance.delete()
@@ -36,24 +41,35 @@ def edit_recipe(request, slug):
     else:
         form = AddReсipe(instance=recipe)
         formset_steps = inline_form(instance = recipe)
-        return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': form, 'formset': formset_steps})
+        return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': form, 'formset': formset_steps, 'image_formset':inline_form_image()})
 
 
 def add_recipe(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=404)
     if request.POST:    
-        resipe = AddReсipe(request.POST).save(commit=False)
-        resipe.author = request.user
-        resipe.slug = slug_gen(resipe.title, resipe.author.id)
-        resipe.save()
-        if inline_form(request.POST).is_valid():
-            stepset = inline_form(request.POST)
-            for step_item in stepset:
-                step = step_item.save(commit=False)
-                step.resipe = resipe
-                step.save() 
+        resipe_form = AddReсipe(request.POST)
+        if resipe_form.is_valid():
+            resipe = resipe_form.save(commit=False)
+            if not request.user.recipes.filter(title=resipe.title, author=request.user).exists():
+                resipe.author = request.user
+                resipe.slug = slug_gen(resipe.title, resipe.author.id)
+                print(resipe.title)
+                resipe.save()
             else:
+                messages.error(request, 'У Вас уже есть рецепт с таким названием.')
+                return redirect(request.path)
+        
+            stepset = inline_form(request.POST)
+            if stepset.is_valid():
+                for step_item in stepset:
+                    if not step_item.cleaned_data.get('DELET'):
+                        step = step_item.save(commit=False)
+                        step.resipe = resipe
+                        step.save() 
+            else:
+                raise forms.ValidationError('Неправильно заполненная форма')
+        else:
                 raise forms.ValidationError('Неправильно заполненная форма')
         return redirect('/resipes')
     else:
@@ -74,8 +90,7 @@ def login_user(request):
 def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
-    else:
-        redirect('/login')
+    return redirect('/login')
 def register(request):
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)

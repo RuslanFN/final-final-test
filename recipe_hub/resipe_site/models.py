@@ -12,7 +12,7 @@ class Resipe(models.Model):
     title = models.CharField(max_length=50, verbose_name='Название')
     about = models.TextField(max_length=1000, verbose_name='Описание')
     duration = models.IntegerField(verbose_name='Длительность')
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
     Category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='recipes', verbose_name='Категория')
     
     def __str__(self):

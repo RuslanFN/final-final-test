@@ -3,6 +3,13 @@
 {% block title %} {{title}} {% endblock %}
 
 {% block main %}
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
 <h1>Добаить рецепт</h1>
 <p>Заполните эти поля</p>
 <form id="form-container" method="post">
