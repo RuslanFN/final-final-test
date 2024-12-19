@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Category, StepResipe, Resipe
+from .models import Category, StepResipe, Resipe, ImageResipe
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -31,8 +31,8 @@ class AddReсipe(forms.ModelForm):
         widgets = {'about':forms.Textarea}
 
 
-inline_form = forms.inlineformset_factory(Resipe, StepResipe, fields=['title', 'detail'], can_delete=True, extra=3)#, AddResipe, StepResipeInline, fields=['title', 'detail'])
-
+inline_form = forms.inlineformset_factory(Resipe, StepResipe, fields=['title', 'detail'], fk_name='resipe')#, AddResipe, StepResipeInline, fields=['title', 'detail'])
+inline_form_image = forms.inlineformset_factory(Resipe, ImageResipe, fields=['img'])
 #stepInline = forms.inlineformset_factory(Resipe, StepResipeInline, AddRecipe, StepResipeInline)
 class AuthForm(forms.Form):
     username = forms.CharField(label='Логин', max_length=50)

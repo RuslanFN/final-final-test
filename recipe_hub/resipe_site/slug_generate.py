@@ -5,7 +5,7 @@ class SlugGenerator():
         'и':'i', 'й':'y', 'к':'k', 'л':'l', 'м':'m', 'н':'n', 
         'о':'o', 'п':'p', 'р':'r', 'с':'s', 'т':'t', 'у':'u',
         'ф':'f', 'х':'h', 'ц':'ts', 'ч':'ch', 'ш':'sh', 'щ':'sh', 
-        's':'yi', 'э':'a', 'ю':'u', 'я':'ya'}
+        'ы':'yi', 'э':'a', 'ю':'u', 'я':'ya'}
     def __call__(self, title, id):
         slug = ''
         for sym in title.lower():

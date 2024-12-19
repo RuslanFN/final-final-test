@@ -1,31 +1,38 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserRegistrationForm, AuthForm, AddReсipe, inline_form
+from .forms import UserRegistrationForm, AuthForm, AddReсipe, inline_form, inline_form_image
 from . import models
 from django.utils.text import slugify
 from .slug_generate import SlugGenerator
+from django import forms
 # Create your views here.
 slug_gen = SlugGenerator()
 def get_resipes(request):
     resipes = models.Resipe.objects.all()
     return render(request, 'resipe_site/resipes-list.html', {'title':'Рецепты', 'resipes':resipes})
 
-def edit_reciipe(request, slug):
+def edit_recipe(request, slug):
     recipe = get_object_or_404(models.Resipe, slug=slug)
     if request.method == 'POST':
         recipe_form = AddReсipe(request.POST, instance=recipe).save(commit=False)
-        #recipe_form.author = request.user
+        
+    
         recipe_form.slug = slug_gen(recipe_form.title, recipe_form.author.id)
         recipe_form.save()
-        if inline_form(request.POST, instance=recipe).is_valid():
-            stepset = inline_form(request.POST, instance=recipe)
-            for step_item in stepset:
-                step = step_item.save(commit=False)
-                step.resipe = recipe
-                step.save() 
-        
-        return redirect('/resipes')
+        stepset = inline_form(request.POST, instance=recipe)
+        if stepset.is_valid():
+                for step in stepset:
+                    if step.cleaned_data.get('DELETE') or (not step.cleaned_data.get('title') and not step.cleaned_data.get('detail')):
+                        if step.instance.id:
+                            step.instance.delete()
+                    else:
+                        step_instance = step.save(commit=False)
+                        step_instance.recipe = recipe
+                        step_instance.save()
+                return redirect('/resipes')
+        else:
+            raise forms.ValidationError('Неправильно заполненная форма')
     else:
         form = AddReсipe(instance=recipe)
         formset_steps = inline_form(instance = recipe)
@@ -46,9 +53,11 @@ def add_recipe(request):
                 step = step_item.save(commit=False)
                 step.resipe = resipe
                 step.save() 
+            else:
+                raise forms.ValidationError('Неправильно заполненная форма')
         return redirect('/resipes')
     else:
-        return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddReсipe(), 'formset': inline_form()})
+        return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddReсipe(), 'formset': inline_form(), 'image_formset':inline_form_image()})
 def login_user(request):
     if request.POST:
         username = request.POST.get('username')
