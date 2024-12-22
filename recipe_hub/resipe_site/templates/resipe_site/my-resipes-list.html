@@ -1,0 +1,38 @@
+{% extends "resipe_site/template.html" %}
+{% load static %}
+{% block title %} {{title}} {% endblock %}
+{% block links %} 
+<link rel="stylesheet" href="{% static "resipe_site/css/resipes-list.css"%}"/> 
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center">Список Рецептов</h1>
+    <a href="{% url 'add_resipe' %}" class="btn btn-primary mt-auto">Добавить рецепт</a>
+    </br>
+    </br>
+
+    <div class="row">
+        {% for resipe in resipes %} 
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ resipe.images.all.first.img.url}}" class="card-img-top" alt="{{ resipe.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ resipe.title }}</h5>
+                    <p class="card-text">{{ resipe.about }}</p>
+                </div>
+                <a href="{% url 'edit_recipe' slug=resipe.slug %}" class="btn btn-primary mt-auto">Редактировать</a>
+                <a href="{% url 'recipe' slug=resipe.slug %}" class="btn btn-primary mt-auto">Подробнее</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+{% endblock %}

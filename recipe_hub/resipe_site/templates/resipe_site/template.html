@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   {% block links %}
   {% endblock %}
-  <link rel="stylesheet" href="{% static "resipe_site/css/template-styles.css"%}"/>
+  <link rel="stylesheet" href="{% static "resipe_site/css/template-styles.css" %}"/>
   <title>{% block title %}{% endblock %}</title>
  
  </head>
@@ -16,7 +16,7 @@
             <ul>
                 <li><a href="{% url "resipes"%}"">Главная</a></li>
                 {% if request.user.is_authenticated %}
-                <li><a href="#">Мои рецепты</a></li>
+                <li><a href="{% url 'myresipes' %}">Мои рецепты</a></li>
                 {% endif %}
                 {% if request.user.is_authenticated %}
                     <li><a href="{% url "logout"%}">Выйти</a></li>

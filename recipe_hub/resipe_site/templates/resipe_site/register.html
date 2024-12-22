@@ -1,12 +1,17 @@
 {% extends "resipe_site/template.html" %}
 {% load static %}
 {% block title %} {{title}} {% endblock %}
+{% block links %}
+<link rel="stylesheet" href="{% static "resipe_site/css/auth.css" %}"/>
+{% endblock %}
 {% block main %}
-<h1>Create an account</h1>
-<p>Please, sign up using the following form:</p>
-<form method="post">
-    {{ user_form.as_p }}
-    {% csrf_token %}
-    <p><input type="submit" value="Create my account"></p>
-</form>
+<div class="conteiner">
+    <h1>Регистрация</h1>
+    <p>Пожалуйста, заполните эту форму:</p>
+    <form method="post">
+        {{ user_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Создать аккаунт"></p>
+    </form>
+</div>
 {% endblock %}

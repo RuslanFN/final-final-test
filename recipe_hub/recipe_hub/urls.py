@@ -19,12 +19,15 @@ from resipe_site import views
 from django.urls import path
 
 urlpatterns = [
+    path('', views.get_resipes),
     path('admin/', admin.site.urls),
     path('register', views.register, name='register'),
     path('login', views.login_user, name='login'),
     path('logout', views.logout_user, name='logout'),
-    path('resipes', views.get_resipes, name='resipes'),
+    path('recipes', views.get_resipes, name='resipes'),
+    path('myrecipes', views.get_my_recipes, name='myresipes'),
     path('add_recipe', views.add_recipe, name='add_resipe'),
-    path('<slug:slug>/edit', views.edit_recipe, name='edit_recipe')
+    path('<slug:slug>', views.detail_recipe, name='recipe'),
+    path('<slug:slug>/edit', views.edit_recipe, name='edit_recipe'),
     ]
 

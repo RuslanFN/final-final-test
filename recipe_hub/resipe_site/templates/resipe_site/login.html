@@ -1,10 +1,16 @@
 {% extends "resipe_site/template.html" %}
 {% load static %}
+{% block links %}
+<link rel="stylesheet" href="{% static "resipe_site/css/auth.css" %}"/>
+{% endblock %}
 {% block title %} {{title}} {% endblock %}
 {% block main %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Отправить</button>
-</form>
+<div class="conteiner">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Отправить</button>
+        <a href="{% url 'register' %}">Регистрация</a>
+    </form>
+</div>
 {% endblock %}

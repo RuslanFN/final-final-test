@@ -18,7 +18,7 @@
                     <h5 class="card-title">{{ resipe.title }}</h5>
                     <p class="card-text">{{ resipe.about }}</p>
                 </div>
-                <a href="details_url" class="btn btn-primary mt-auto">Подробнее</a>
+                <a href="{% url 'recipe' slug=resipe.slug %}" class="btn btn-primary mt-auto">Подробнее</a>
             </div>
         </div>
         {% endfor %}

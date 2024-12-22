@@ -8,12 +8,21 @@ from .slug_generate import SlugGenerator
 from django import forms
 from django.contrib import messages
 from django.db import IntegrityError
+from random import choices
 # Create your views here.
 slug_gen = SlugGenerator()
 def get_resipes(request):
     resipes = models.Resipe.objects.all()
+    resipes = resipes if len(resipes) <= 5 else choices(resipes)
     return render(request, 'resipe_site/resipes-list.html', {'title':'Рецепты', 'resipes':resipes})
-
+def get_my_recipes(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=404)
+    recipes = request.user.recipes.all()
+    return render(request, 'resipe_site/my-resipes-list.html', {'title':'Мои рецепты', 'resipes':recipes})
+def detail_recipe(request, slug):
+    recipe = models.Resipe.objects.filter(slug=slug).first()
+    return render(request, 'resipe_site/recipe-deteil.html', {'title':recipe.title, 'recipe':recipe})
 def edit_recipe(request, slug):
     recipe = get_object_or_404(models.Resipe, slug=slug)
     if request.method == 'POST':
@@ -81,7 +90,7 @@ def login_user(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-        return redirect('/resipes')
+        return redirect('/recipes')
         
     else: 
         logout(request)
