@@ -18,6 +18,7 @@ from django.contrib import admin
 from resipe_site import views
 from django.urls import path
 from django.conf.urls.static import static
+from . import settings
 urlpatterns = [
     path('', views.get_resipes),
     path('admin/', admin.site.urls),
