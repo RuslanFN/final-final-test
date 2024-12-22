@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from resipe_site import views
 from django.urls import path
-
+from django.conf.urls.static import static
 urlpatterns = [
     path('', views.get_resipes),
     path('admin/', admin.site.urls),
@@ -30,4 +30,5 @@ urlpatterns = [
     path('<slug:slug>', views.detail_recipe, name='recipe'),
     path('<slug:slug>/edit', views.edit_recipe, name='edit_recipe'),
     ]
-
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
