@@ -6,6 +6,6 @@ meta:
 build:
   requirementsPath: requirements.txt
 run:
-  scriptName: recipe_hub/mange.py
+  scriptName: final-final-test/recipe_hub/manage.py
   persistenceMount: /data
   containerPort: 80
