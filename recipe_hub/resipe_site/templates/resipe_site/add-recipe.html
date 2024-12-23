@@ -12,9 +12,11 @@
 {% endif %}
 <h1>Добаить рецепт</h1>
 <p>Заполните эти поля</p>
-<form id="form-container" method="post">
+<form id="form-container" method="post" enctype="multipart/form-data">
     {{ form.as_p }}
+    {{ image_formset.management_form }}
     {% for form in image_formset %}
+        {{ form.media }}
         {{ form.as_p }}
     {% endfor %}
     <h2>Шаги</h2>

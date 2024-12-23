@@ -23,6 +23,7 @@ urlpatterns = [
     path('', views.get_resipes),
     path('admin/', admin.site.urls),
     path('register', views.register, name='register'),
+    path('<slug:slug>/remove', views.remove_recipe, name='remove'),
     path('login', views.login_user, name='login'),
     path('logout', views.logout_user, name='logout'),
     path('recipes', views.get_resipes, name='resipes'),

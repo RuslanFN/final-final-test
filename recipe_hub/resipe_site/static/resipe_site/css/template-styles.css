@@ -51,4 +51,6 @@ footer {
 main {
     height: 100vh;
     margin: 0% 20%;
+    min-height:100vh;
+    height: max-content;
 }

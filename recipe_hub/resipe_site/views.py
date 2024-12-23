@@ -11,9 +11,13 @@ from django.db import IntegrityError
 from random import choices
 # Create your views here.
 slug_gen = SlugGenerator()
+def remove_recipe(request, slug):
+    recipe = get_object_or_404(models.Resipe, slug=slug)
+    recipe.delete()
+    return redirect('/myrecipes')
 def get_resipes(request):
     resipes = models.Resipe.objects.all()
-    resipes = resipes if len(resipes) <= 5 else choices(resipes)
+    resipes = resipes if len(resipes) <= 5 else choices(resipes, k=5)
     return render(request, 'resipe_site/resipes-list.html', {'title':'Рецепты', 'resipes':resipes})
 def get_my_recipes(request):
     if not request.user.is_authenticated:
@@ -33,10 +37,9 @@ def edit_recipe(request, slug):
             stepset = inline_form(request.POST, instance=recipe)
         except IntegrityError:
             messages.error(request, 'У вас уже есть рецепт с таким названием.')
-            return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': AddReсipe(instance=recipe), 'formset': inline_form(instance=recipe), 'image_formset':inline_form_image(instance=recipe)})
+            return redirect(request.path)
         if stepset.is_valid():
                 for step in stepset:
-                    
                     if step.cleaned_data.get('DELETE') or (not step.cleaned_data.get('title') and not step.cleaned_data.get('detail')):
                         if step.instance.id:
                             step.instance.delete()
@@ -44,13 +47,28 @@ def edit_recipe(request, slug):
                         step_instance = step.save(commit=False)
                         step_instance.recipe = recipe
                         step_instance.save()
-                return redirect('/resipes')
         else:
-            raise forms.ValidationError('Неправильно заполненная форма')
+            messages.error(request, 'Ошибка в заполнении формы шаги. Отметьте пустые поля шагов.')
+            return redirect(request.path)
+        images = inline_form_image(request.POST, request.FILES, instance=recipe)
+        if images.is_valid():
+            for image in images:
+                print(image.cleaned_data.get('img'))
+                if image.cleaned_data.get('DELET') or not image.cleaned_data.get('img'):
+                    if image.instance.id:
+                        image.instance.delete()
+                else:
+                    img = image.save(commit=False)
+                    img.resipe = recipe
+                    img.save() 
+        else:
+            messages.error(request, 'Ошибка в заполнении формы. Отметьте пустые поля фотографий')
+            return redirect(request.path)
+        return redirect('/myrecipes')
     else:
         form = AddReсipe(instance=recipe)
         formset_steps = inline_form(instance = recipe)
-        return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': form, 'formset': formset_steps, 'image_formset':inline_form_image()})
+        return render(request, 'resipe_site/edit-recipe.html', {'title':'Редактировать рецепт', 'form': form, 'formset': formset_steps, 'image_formset':inline_form_image(instance=recipe)})
 
 
 def add_recipe(request):
@@ -72,17 +90,31 @@ def add_recipe(request):
             stepset = inline_form(request.POST)
             if stepset.is_valid():
                 for step_item in stepset:
-                    if not step_item.cleaned_data.get('DELET'):
+                    if not step_item.cleaned_data.get('DELET') and ((step_item.cleaned_data.get('title') and step_item  .cleaned_data.get('detail'))):
                         step = step_item.save(commit=False)
                         step.resipe = resipe
                         step.save() 
             else:
-                raise forms.ValidationError('Неправильно заполненная форма')
+                messages.error(request, 'Ошибка в заполнении формы шаги')
+                return redirect(request.path)
+            images = inline_form_image(request.POST, request.FILES)
+            if images.is_valid():
+                for image in images:
+                    print(image.cleaned_data.get('img'), 'img')
+                    if not image.cleaned_data.get('DELET') and image.cleaned_data.get('img'):
+                            img = image.save(commit=False)
+                            img.resipe = resipe
+                            img.save() 
+            else:
+                messages.error(request, 'Ошибка в заполнении формы фотки')
+                return redirect(request.path)
+            
         else:
-                raise forms.ValidationError('Неправильно заполненная форма')
-        return redirect('/resipes')
+            messages.error(request, 'Ошибка в заполнении формы форма ')
+            return redirect(request.path)
+        return redirect('/myrecipes')
     else:
-        return render(request, 'resipe_site/add-recipe.html', {'title':'Добавить рецепт', 'form': AddReсipe(), 'formset': inline_form(), 'image_formset':inline_form_image()})
+        return render(request, 'resipe_site/add-recipe.html', {'title':'Редактировать рецепт', 'form': AddReсipe(), 'formset': inline_form(), 'image_formset':inline_form_image()})
 def login_user(request):
     if request.POST:
         username = request.POST.get('username')
