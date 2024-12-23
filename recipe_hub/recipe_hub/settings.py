@@ -33,7 +33,7 @@ DATABASES = {
         'NAME': 'ruslfn$default',
         'USER': 'ruslfn',
         'PASSWORD': os.getenv('MYSQL_PASSWORD'),
-        'HOST': 'ruslfn.mysql.pythonanywhere-services.com   ',
+        'HOST': 'ruslfn.mysql.pythonanywhere-services.com',
         'OPTIONS': {
             'init_command': "SET NAMES 'utf8mb4';SETsql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
