@@ -1,0 +1,11 @@
+meta:
+  environment: python
+  toolchain:
+    name: pip
+    version: 3.10
+build:
+  requirementsPath: recipe_hub/requirements.txt
+run:
+  command: python recipe_hub/manage.py 127.0.0.1:8000 --insecure
+  persistenceMount: /data
+  containerPort: 8000
