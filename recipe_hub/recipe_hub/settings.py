@@ -20,11 +20,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e1n82refm&dofrnql)_qi#%xz@lwh)dc(d5kazn^$e*7h4war&'
-
+SECRET_KEY = os.getenv('SECRET_KEY')
+SESSION_COOKIE_SECURE= True
+CRFS_COOKIE_SECURE = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]0', 'ruslfn.pythonanywhere.com']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ruslfn$<your_database_name>',
+        'USER': 'ruslfn',
+        'PASSWORD': os.getenv('MYSQL_PASSWORD'),
+        'HOST': 'ruslfn.mysql.pythonanywhere-services.com   ',
+        'OPTIONS': {
+            'init_command': "SET NAMES 'utf8mb4';SETsql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+            },
+        }
+}
 
 
 # Application definition
@@ -125,5 +140,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 print(STATIC_ROOT, MEDIA_ROOT)
